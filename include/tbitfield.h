@@ -16,9 +16,9 @@ private:
     size_t bitLen;   // длина битового поля - макс. к-во битов
     uint *pMem;      // память для представления битового поля
     size_t memLen;   // к-во эл-тов uint для представления бит.поля //длина массива pMem
-
+    size_t sizik = sizeof(uint) * 8;
     // методы реализации
-    size_t getIndex(const size_t n) const; // индекс в pМем для бита n
+    size_t getIndex(const size_t n) const;// индекс в pМем для бита n
     uint getMask(const size_t n) const;    // битовая маска для бита n
                                  
 public:

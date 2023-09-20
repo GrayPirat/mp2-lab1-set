@@ -11,17 +11,30 @@
 
 TBitField::TBitField(size_t len)
 {
-   
+    bitLen = len;
+    //int sizik = sizeof(uint) * 8;
+    //memLen = len / (sizeof(uint) * 8);
+    bitLen % sizik == 0 ? memLen = bitLen / sizik : memLen = bitLen/sizik + 1;
+    this->pMem = new uint[memLen];
+    for (size_t i = 0; i < memLen; i++) {
+        this->pMem[i] = this->pMem[i] & 0;
+    }
 }
 
 TBitField::TBitField(const TBitField &bf) // конструктор копирования
 {
-
+    delete this->pMem;
+    this->pMem = new uint[bf.memLen];
+    for (size_t i = 0; i < bf.memLen; i++) {
+        this->pMem[i] = bf.pMem[i];
+    }
 }
 
 size_t TBitField::getIndex(const size_t n) const  // индекс в pМем для бита n
 {
-    return 0;
+    size_t ans;
+    n%sizik==0? ans=n/sizik: ans= n/sizik+1;
+    return ans;
 }
 
 uint TBitField::getMask(const size_t n) const // битовая маска для бита n
@@ -32,7 +45,7 @@ uint TBitField::getMask(const size_t n) const // битовая маска дл�
 // доступ к битам битового поля
 uint TBitField::getLength() const // получить длину (к-во битов)
 {
-    return 0;
+    return bitLen;
 }
 
 size_t TBitField::getNumBytes() const // получить количество байт выделенной памяти
