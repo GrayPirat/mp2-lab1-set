@@ -12,29 +12,32 @@
 TBitField::TBitField(size_t len)
 {
     bitLen = len;
-    //int sizik = sizeof(uint) * 8;
-    //memLen = len / (sizeof(uint) * 8);
-    bitLen % sizik == 0 ? memLen = bitLen / sizik : memLen = bitLen/sizik + 1;
-    this->pMem = new uint[memLen];
+    if (len == 0) {
+        memLen = 0;
+    }
+    else {
+        bitLen% sizik == 0 ? memLen = bitLen / sizik : memLen = bitLen / sizik + 1;
+    }
+    
+    pMem = new uint[memLen];
     for (size_t i = 0; i < memLen; i++) {
-        this->pMem[i] = this->pMem[i] & 0;
+        pMem[i] = pMem[i] & 0;
     }
 }
 
 TBitField::TBitField(const TBitField &bf) // конструктор копирования
 {
-    delete this->pMem;
-    this->pMem = new uint[bf.memLen];
-    for (size_t i = 0; i < bf.memLen; i++) {
-        this->pMem[i] = bf.pMem[i];
+    delete pMem;
+    memLen = bf.memLen;
+    pMem = new uint[bf.memLen];
+    for (size_t i = 0; i < memLen; i++) {
+        pMem[i] = bf.pMem[i];
     }
 }
 
 size_t TBitField::getIndex(const size_t n) const  // индекс в pМем для бита n
 {
-    size_t ans;
-    n%sizik==0? ans=n/sizik: ans= n/sizik+1;
-    return ans;
+    return n/sizik;
 }
 
 uint TBitField::getMask(const size_t n) const // битовая маска для бита n
@@ -55,17 +58,18 @@ size_t TBitField::getNumBytes() const // получить количество �
 
 void TBitField::setBit(const size_t n) // установить бит
 {
-
+    pMem[getIndex(n)] |= 1<<(n%sizik);
 }
 
 void TBitField::clrBit(const size_t n) // очистить бит
 {
-
+    pMem[getIndex(n)] &= ~(1 << (n % sizik));
 }
 
 bool TBitField::getBit(const size_t n) const // получить значение бита
 {
-    return false;
+    bool isbit = (1 << n%sizik) & pMem[getIndex(n)];
+    return isbit;
 }
 
 // битовые операции
@@ -84,7 +88,7 @@ bool TBitField::operator!=(const TBitField &bf) const // сравнение
     return false;
 }
 
-TBitField TBitField::operator|(const TBitField &bf) // операция "или"
+TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 {
     return TBitField(1);
 }
@@ -101,7 +105,9 @@ TBitField TBitField::operator~() // отрицание
 
 TBitField::~TBitField()
 {
-
+    delete pMem;
+    memLen = 0;
+    bitLen = 0;
 }
 
 // ввод/вывод
