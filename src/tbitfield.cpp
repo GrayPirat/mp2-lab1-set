@@ -9,6 +9,10 @@
 #include <iostream>
 #include "tbitfield.h"
 
+struct OutOfIndException {
+    int a;
+};
+
 TBitField::TBitField(size_t len)
 {
     bitLen = len;
@@ -58,34 +62,76 @@ size_t TBitField::getNumBytes() const // получить количество �
 
 void TBitField::setBit(const size_t n) // установить бит
 {
-    pMem[getIndex(n)] |= 1<<(n%sizik);
+    if (n > bitLen) {
+        throw OutOfIndException();
+    }
+    else {
+        pMem[getIndex(n)] |= 1 << (n % sizik);
+    }
 }
 
 void TBitField::clrBit(const size_t n) // очистить бит
 {
-    pMem[getIndex(n)] &= ~(1 << (n % sizik));
+    if (n > bitLen) {
+        throw OutOfIndException();
+    }
+    else {
+        pMem[getIndex(n)] &= ~(1 << (n % sizik));
+    }
 }
 
 bool TBitField::getBit(const size_t n) const // получить значение бита
 {
-    bool isbit = (1 << n%sizik) & pMem[getIndex(n)];
-    return isbit;
+    if (n > bitLen) {
+        throw OutOfIndException();
+    }
+    else {
+        bool isbit = (1 << n % sizik) & pMem[getIndex(n)];
+        return isbit;
+    }
 }
 
 // битовые операции
 TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 {
+    delete pMem;
+    memLen = bf.memLen;
+    bitLen = bf.bitLen;
+    pMem = new uint(bf.memLen);
+    for (int i = 0; i < memLen; i++) {
+        pMem[i] = bf.pMem[i];
+    }
     return *this;
 }
 
 bool TBitField::operator==(const TBitField &bf) const // сравнение
 {
-    return true;
+    if (bitLen == bf.bitLen) {
+        for (int i = 0; i < memLen; i++) {
+            if (pMem[i] != bf.pMem[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 bool TBitField::operator!=(const TBitField &bf) const // сравнение
 {
-    return false;
+    /*if (bitLen == bf.bitLen) {
+        for (int i = 0; i < memLen; i++) {
+            if (pMem[i] != bf.pMem[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;*/
+    if (*this == bf) {
+        return false;
+    }
+    return true;
 }
 
 TBitField TBitField::operator|(const TBitField& bf) // операция "или"
@@ -100,7 +146,11 @@ TBitField TBitField::operator&(const TBitField &bf) // операция "и"
 
 TBitField TBitField::operator~() // отрицание
 {
-    return TBitField(1);
+    for (int i = 0; i < memLen-1; i++) {
+        pMem[i] = ~pMem[i];
+    }
+    pMem[memLen-1]
+    return *this;
 }
 
 TBitField::~TBitField()
