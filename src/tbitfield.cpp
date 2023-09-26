@@ -25,7 +25,7 @@ TBitField::TBitField(size_t len)
     
     pMem = new uint[memLen];
     for (size_t i = 0; i < memLen; i++) {
-        pMem[i] = pMem[i] & 0;
+        pMem[i] = 0;
     }
 }
 
@@ -64,7 +64,7 @@ size_t TBitField::getNumBytes() const // получить количество �
 
 void TBitField::setBit(const size_t n) // установить бит
 {
-    if (n > bitLen) {
+    if (n > bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
@@ -74,7 +74,7 @@ void TBitField::setBit(const size_t n) // установить бит
 
 void TBitField::clrBit(const size_t n) // очистить бит
 {
-    if (n > bitLen) {
+    if (n > bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
@@ -84,7 +84,7 @@ void TBitField::clrBit(const size_t n) // очистить бит
 
 bool TBitField::getBit(const size_t n) const // получить значение бита
 {
-    if (n > bitLen) {
+    if (n > bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
@@ -96,7 +96,7 @@ bool TBitField::getBit(const size_t n) const // получить значени�
 // битовые операции
 TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 {
-    delete pMem;
+    delete[] pMem;
     memLen = bf.memLen;
     bitLen = bf.bitLen;
     pMem = new uint(bf.memLen);
@@ -232,11 +232,11 @@ TBitField TBitField::operator&(const TBitField &bf) // операция "и"
 
 TBitField TBitField::operator~() // отрицание
 {
-    TBitField temp(memLen);
+    TBitField temp(bitLen);
     for (int i = 0; i < memLen - 1; i++) {
-        temp.pMem[i] = ~(pMem[i]);
+        temp.pMem[i] = ~(this->pMem[i]);
     }
-    for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+    for (int i = (sizik * (memLen - 1)); i < bitLen; i++) {
         if (getBit(i)==0) {
             temp.setBit(i);
         }
