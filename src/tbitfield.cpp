@@ -31,9 +31,10 @@ TBitField::TBitField(size_t len)
 
 TBitField::TBitField(const TBitField &bf) // конструктор копирования
 {
-    delete pMem;
+    //delete[] pMem;
     memLen = bf.memLen;
-    pMem = new uint[bf.memLen];
+    bitLen = bf.bitLen;
+    pMem = new uint[memLen];
     for (size_t i = 0; i < memLen; i++) {
         pMem[i] = bf.pMem[i];
     }
@@ -46,7 +47,8 @@ size_t TBitField::getIndex(const size_t n) const  // индекс в pМем д�
 
 uint TBitField::getMask(const size_t n) const // битовая маска для бита n
 {
-    return 0;
+    uint a = 0;
+    return a|(1<<(n%sizik));
 }
 
 // доступ к битам битового поля
@@ -66,7 +68,7 @@ void TBitField::setBit(const size_t n) // установить бит
         throw OutOfIndException();
     }
     else {
-        pMem[getIndex(n)] |= 1 << (n % sizik);
+        pMem[getIndex(n)] |= getMask(n);
     }
 }
 
@@ -76,7 +78,7 @@ void TBitField::clrBit(const size_t n) // очистить бит
         throw OutOfIndException();
     }
     else {
-        pMem[getIndex(n)] &= ~(1 << (n % sizik));
+        pMem[getIndex(n)] &= ~(getMask(n));
     }
 }
 
@@ -86,7 +88,7 @@ bool TBitField::getBit(const size_t n) const // получить значени�
         throw OutOfIndException();
     }
     else {
-        bool isbit = (1 << n % sizik) & pMem[getIndex(n)];
+        bool isbit = (getMask(n)) & pMem[getIndex(n)];
         return isbit;
     }
 }
@@ -136,28 +138,115 @@ bool TBitField::operator!=(const TBitField &bf) const // сравнение
 
 TBitField TBitField::operator|(const TBitField& bf) // операция "или"
 {
-    return TBitField(1);
+    if (bitLen == bf.bitLen) {
+        TBitField temp(bitLen);
+        for (int i = 0; i < memLen - 1; i++) {
+            temp.pMem[i] = pMem[i] | bf.pMem[i];
+        }
+        for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+            if (getBit(i) || bf.getBit(i)) {
+                temp.setBit(i);
+            }
+        }
+        return temp;
+    }
+    else {
+        if (bitLen > bf.bitLen) {
+            TBitField temp(bitLen);
+            for (int i = 0; i < bf.memLen; i++) {
+                temp.pMem[i] = pMem[i] | bf.pMem[i];
+            }
+            for (int i = sizik * (bf.memLen - 1); i < bf.bitLen; i++) {
+                if (getBit(i) || bf.getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            for (int i = bf.bitLen; i < bitLen; i++) {
+                if (getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            return temp;
+        }
+        else {
+            TBitField temp(bf.bitLen);
+            for (int i = 0; i < memLen; i++) {
+                temp.pMem[i] = pMem[i] | bf.pMem[i];
+            }
+            for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+                if (getBit(i) || bf.getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            for (int i = bitLen; i < bf.bitLen; i++) {
+                if (getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            return temp;
+        }
+    }
 }
 
 TBitField TBitField::operator&(const TBitField &bf) // операция "и"
 {
-    return TBitField(1);
+    if (bitLen == bf.bitLen) {
+        TBitField temp(bitLen);
+        for (int i = 0; i < memLen - 1; i++) {
+            temp.pMem[i] = pMem[i] & bf.pMem[i];
+        }
+        for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+            if (getBit(i) && bf.getBit(i)) {
+                temp.setBit(i);
+            }
+        }
+        return temp;
+    }
+    else {
+        if (bitLen > bf.bitLen) {
+            TBitField temp(bitLen);
+            for (int i = 0; i < bf.memLen; i++) {
+                temp.pMem[i] = pMem[i] & bf.pMem[i];
+            }
+            for (int i = sizik * (bf.memLen - 1); i < bf.bitLen; i++) {
+                if (getBit(i) && bf.getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            return temp;
+        }
+        else {
+            TBitField temp(bf.bitLen);
+            for (int i = 0; i < memLen; i++) {
+                temp.pMem[i] = pMem[i] & bf.pMem[i];
+            }
+            for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+                if (getBit(i) && bf.getBit(i)) {
+                    temp.setBit(i);
+                }
+            }
+            return temp;
+        }
+    }
 }
 
 TBitField TBitField::operator~() // отрицание
 {
-    for (int i = 0; i < memLen-1; i++) {
-        pMem[i] = ~pMem[i];
+    TBitField temp(memLen);
+    for (int i = 0; i < memLen - 1; i++) {
+        temp.pMem[i] = ~(pMem[i]);
     }
-    pMem[memLen-1]
-    return *this;
+    for (int i = sizik * (memLen - 1); i < bitLen; i++) {
+        if (getBit(i)==0) {
+            temp.setBit(i);
+        }
+    }
+    return temp;
 }
 
 TBitField::~TBitField()
 {
-    delete pMem;
-    memLen = 0;
-    bitLen = 0;
+    delete[] pMem;
 }
 
 // ввод/вывод
