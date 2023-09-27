@@ -96,12 +96,15 @@ bool TBitField::getBit(const size_t n) const // получить значени�
 // битовые операции
 TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 {
-    delete[] pMem;
-    memLen = bf.memLen;
-    bitLen = bf.bitLen;
-    pMem = new uint(bf.memLen);
-    for (int i = 0; i < memLen; i++) {
-        pMem[i] = bf.pMem[i];
+    if (*this != bf) {
+        delete[] pMem;
+        memLen = bf.memLen;
+        bitLen = bf.bitLen;
+        pMem = new uint[bf.memLen];
+        for (int i = 0; i < memLen; i++) {
+            pMem[i] = bf.pMem[i];
+        }
+        
     }
     return *this;
 }

@@ -284,3 +284,19 @@ TEST(TBitField, bitfields_with_different_bits_are_not_equal)
 
     EXPECT_NE(bf1, bf2);
 }
+
+TEST(TBitField, can_1)
+{
+    const size_t size = 38;
+    TBitField bf(size), negBf(size), expNegBf(size);
+    bf.setBit(35);
+    negBf = ~bf;
+
+    for (size_t i = 0; i < size; i++)
+        expNegBf.setBit(i);
+    expNegBf.clrBit(35);
+
+    expNegBf = expNegBf;
+
+    EXPECT_EQ(expNegBf, negBf);
+}
