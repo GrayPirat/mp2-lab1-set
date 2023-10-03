@@ -96,7 +96,7 @@ bool TBitField::getBit(const size_t n) const // получить значени�
 // битовые операции
 TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 {
-    if (*this != bf) {
+    if (this != &bf) {
         delete[] pMem;
         memLen = bf.memLen;
         bitLen = bf.bitLen;
@@ -133,7 +133,7 @@ bool TBitField::operator!=(const TBitField &bf) const // сравнение
         return false;
     }
     return true;*/
-    if (*this == bf) {
+    if (this == &bf) {
         return false;
     }
     return true;
@@ -182,7 +182,7 @@ TBitField TBitField::operator|(const TBitField& bf) // операция "или"
                 }
             }
             for (int i = bitLen; i < bf.bitLen; i++) {
-                if (getBit(i)) {
+                if (bf.getBit(i)) {
                     temp.setBit(i);
                 }
             }

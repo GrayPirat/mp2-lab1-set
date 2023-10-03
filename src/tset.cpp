@@ -55,7 +55,7 @@ void TSet::delElem(const uint elem) // исключение элемента м�
 // теоретико-множественные операции
 TSet& TSet::operator=(const TSet &s) // присваивание
 {
-    if (*this != s) {
+    if (this != &s) {
         TBitField nul(s.maxPower);
         maxPower = s.maxPower;
         bitField = bitField & nul;
@@ -85,7 +85,7 @@ bool TSet::operator==(const TSet &s) const // сравнение
 
 bool TSet::operator!=(const TSet &s) const // сравнение
 {
-    if (*this == s) {
+    if (this == &s) {
         return false;
     }
     return true;
@@ -93,7 +93,16 @@ bool TSet::operator!=(const TSet &s) const // сравнение
 
 TSet TSet::operator+(const TSet &s) // объединение
 {
-    if (maxPower == s.maxPower) {
+    if (maxPower > s.maxPower) {
+        bitField = bitField | s.bitField;
+        return *this;
+    }
+    else {
+        maxPower = s.maxPower;
+        bitField = bitField | s.bitField;
+        return *this;
+    }
+    /*if (maxPower == s.maxPower) {
         TSet temp(s.maxPower);
         maxPower = s.maxPower;
         for (int i = 0; i < s.maxPower; i++) {
@@ -132,7 +141,7 @@ TSet TSet::operator+(const TSet &s) // объединение
             }
             return temp;
         }
-    }
+    }*/
 }
 
 TSet TSet::operator+(const uint elem) // объединение с элементом
@@ -156,45 +165,17 @@ TSet TSet::operator-(const uint elem) // разность с элементом
 
 TSet TSet::operator*(const TSet &s) // пересечение
 {
-    if (maxPower == s.maxPower) {
+    if (maxPower > s.maxPower) {
         TSet temp(s.maxPower);
-        maxPower = s.maxPower;
-        for (int i = 0; i < s.maxPower; i++) {
-            if (bitField.getBit(i) && s.bitField.getBit(i)) {
-                temp.bitField.setBit(i);
-            }
-        }
+        temp.maxPower = maxPower;
+        temp.bitField = bitField & s.bitField;
         return temp;
     }
     else {
-        if (maxPower > s.maxPower) {
-            TSet temp(s.maxPower);
-            //maxPower = s.maxPower;
-            for (int i = 0; i < s.maxPower; i++) {
-                if (bitField.getBit(i) && s.bitField.getBit(i)) {
-                    temp.bitField.setBit(i);
-                }
-            }
-            /*for (int i = s.maxPower; i < maxPower; i++) {
-                if (bitField.getBit(i))
-                    temp.bitField.setBit(i);
-            }*/
-            return temp;
-        }
-        else {
-            TSet temp(maxPower);
-            //maxPower = s.maxPower;
-            for (int i = 0; i < maxPower; i++) {
-                if (bitField.getBit(i) && s.bitField.getBit(i)) {
-                    temp.bitField.setBit(i);
-                }
-            }
-            for (int i = maxPower; i < s.maxPower; i++) {
-                if (s.bitField.getBit(i))
-                    temp.bitField.setBit(i);
-            }
-            return temp;
-        }
+        TSet temp(maxPower);
+        temp.maxPower = s.maxPower;
+        temp.bitField = bitField & s.bitField;
+        return temp;
     }
 }
 
