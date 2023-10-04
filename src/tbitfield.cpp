@@ -23,7 +23,7 @@ TBitField::TBitField(size_t len)
         bitLen% sizik == 0 ? memLen = bitLen / sizik : memLen = bitLen / sizik + 1;
     }
 
-    pMem = new uint[memLen];
+    pMem = new myuint[memLen];
     for (size_t i = 0; i < memLen; i++) {
         pMem[i] = 0;
     }
@@ -34,7 +34,7 @@ TBitField::TBitField(const TBitField& bf) // конструктор копиро
     //delete[] pMem;
     memLen = bf.memLen;
     bitLen = bf.bitLen;
-    pMem = new uint[memLen];
+    pMem = new myuint[memLen];
     for (size_t i = 0; i < memLen; i++) {
         pMem[i] = bf.pMem[i];
     }
@@ -45,9 +45,9 @@ size_t TBitField::getIndex(const size_t n) const  // индекс в pМем д�
     return n / sizik;
 }
 
-uint TBitField::getMask(const size_t n) const // битовая маска для бита n
+myuint TBitField::getMask(const size_t n) const // битовая маска для бита n
 {
-    uint a = 0;
+    myuint a = 0;
     return a | (1 << (n % sizik));
 }
 
@@ -59,12 +59,12 @@ size_t TBitField::getLength() const // получить длину (к-во би
 
 size_t TBitField::getNumBytes() const // получить количество байт выделенной памяти
 {
-    return memLen * sizeof(uint);
+    return memLen * sizeof(myuint);
 }
 
 void TBitField::setBit(const size_t n) // установить бит
 {
-    if (n > bitLen || n < 0) {
+    if (n >= bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
@@ -74,17 +74,17 @@ void TBitField::setBit(const size_t n) // установить бит
 
 void TBitField::clrBit(const size_t n) // очистить бит
 {
-    if (n > bitLen || n < 0) {
+    if (n >= bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
-        pMem[getIndex(n)] &= ~(getMask(n));
+        pMem[getIndex(n)] &= ~(getMask(n%sizik));
     }
 }
 
 bool TBitField::getBit(const size_t n) const // получить значение бита
 {
-    if (n > bitLen || n < 0) {
+    if (n >= bitLen || n < 0) {
         throw OutOfIndException();
     }
     else {
@@ -100,7 +100,7 @@ TBitField& TBitField::operator=(const TBitField& bf) // присваивание
         delete[] pMem;
         memLen = bf.memLen;
         bitLen = bf.bitLen;
-        pMem = new uint[bf.memLen];
+        pMem = new myuint[bf.memLen];
         for (int i = 0; i < memLen; i++) {
             pMem[i] = bf.pMem[i];
         }
