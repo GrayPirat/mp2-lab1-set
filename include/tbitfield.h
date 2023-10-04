@@ -14,7 +14,7 @@ class TBitField
 {
 private:
     size_t bitLen;   // длина битового поля - макс. к-во битов
-    int sizik = sizeof(uint) * 8;
+    size_t sizik = sizeof(uint) * 8;
     uint* pMem;     // память для представления битового поля
     size_t memLen;   // к-во эл-тов uint для представления бит.поля //длина массива pMem
 
