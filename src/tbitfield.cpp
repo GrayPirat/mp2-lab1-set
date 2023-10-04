@@ -48,7 +48,7 @@ size_t TBitField::getIndex(const size_t n) const  // индекс в pМем д�
 myuint TBitField::getMask(const size_t n) const // битовая маска для бита n
 {
     myuint a = 0;
-    return a | (1 << (n % sizik));
+    return a | (static_cast<size_t>(1) << (n % sizik));
 }
 
 // доступ к битам битового поля
