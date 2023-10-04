@@ -6,7 +6,7 @@
 // Битовое поле
 
 #pragma once
-#include <iosfwd>b
+#include <iosfwd>
 
 typedef size_t myuint;
 
